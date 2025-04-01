@@ -1,0 +1,2 @@
+APP_KEY=""
+PG_CONN="postgres://databasepostgresql_user:databasepostgresql_password@localhost:5432/databasepostgresql?sslmode=disable"

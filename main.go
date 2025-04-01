@@ -8,6 +8,7 @@ import (
 	"GO_APIGATEWAY/db"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 )
 
@@ -21,6 +22,14 @@ type User struct {
 
 func main() {
 
+	defer zap.L().Sync()
+	zap.L().Info("app starting...")
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	db.ConnectDB()
 
 	app := fiber.New(fiber.Config{
@@ -29,9 +38,6 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 		Concurrency:  256 * 1024,
 	})
-
-	defer zap.L().Sync()
-	zap.L().Info("app starting...")
 
 	routes.SetupRoutes(app)
 

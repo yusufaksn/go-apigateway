@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"GO_APIGATEWAY/db"
@@ -12,86 +13,75 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtKey = []byte("your_secret_key") // JWT için secret key
+var jwtKey = []byte(os.Getenv("APP_KEY")) // JWT için secret key
 
 type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-// Kullanıcı kayıt fonksiyonu
 func RegisterUser(c *fiber.Ctx) error {
 	var user struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
 
-	// Kullanıcıdan gelen veriyi al
 	if err := c.BodyParser(&user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Geçersiz giriş"})
 	}
 
-	// Şifreyi hash'le
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Println("Hash error:", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Hash error"})
 	}
 
-	// Veritabanına kullanıcıyı ekle
 	_, err = db.DB.Exec(context.Background(), "INSERT INTO users (username, password) VALUES ($1, $2)", user.Username, string(hashedPassword))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Kullanıcı veritabanına eklenemedi"})
 	}
 
-	return c.JSON(fiber.Map{"message": "Kullanıcı başarıyla oluşturuldu!"})
+	return c.JSON(fiber.Map{"message": "Successfull!"})
 }
 
-// Kullanıcı giriş fonksiyonu
 func LoginUser(c *fiber.Ctx) error {
 	var loginData struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
 
-	// Kullanıcıdan gelen veriyi al
 	if err := c.BodyParser(&loginData); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Geçersiz giriş"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Fail"})
 	}
 
-	// Kullanıcıyı veritabanında ara
 	var storedPassword string
 	err := db.DB.QueryRow(context.Background(), "SELECT password FROM users WHERE username=$1", loginData.Username).Scan(&storedPassword)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Kullanıcı bulunamadı"})
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Fail"})
 		}
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Veritabanı hatası"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Fail"})
 	}
 
-	// Şifreyi karşılaştır
 	err = bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(loginData.Password))
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Yanlış şifre"})
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Fail"})
 	}
 
-	// JWT Token oluştur
 	claims := &jwt.RegisteredClaims{
-		Issuer:    loginData.Username,                                 // Token'da kullanıcı ismini saklıyoruz
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)), // Token 1 gün geçerli
+		Issuer:    loginData.Username,
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	// Token'ı imzala
 	signedToken, err := token.SignedString(jwtKey)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Token imzalama hatası"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Fail"})
 	}
 
-	// Token'ı kullanıcıya döndür
 	return c.JSON(fiber.Map{
-		"message": "Giriş başarılı",
+		"message": "Successfull",
 		"token":   signedToken,
 	})
 }

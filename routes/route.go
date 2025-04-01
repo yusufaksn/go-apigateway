@@ -5,11 +5,13 @@ import (
 	"GO_APIGATEWAY/handlers/auth"
 	"GO_APIGATEWAY/handlers/b"
 
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var secretKey = []byte("your_secret_key")
+var secretKey = []byte(os.Getenv("APP_KEY"))
 
 func SetupRoutes(app *fiber.App) {
 	// Service A Routes
