@@ -1,0 +1,30 @@
+
+services:
+
+
+  postgre_user_db:
+    build:
+      context: ./
+      dockerfile: Dockerfile.DB
+    container_name: postgre_user_db
+    hostname: postgres_user_db
+    env_file:
+      - ./databasepostgresql__env
+    networks:
+      - apigateway
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgre_auth_db_volume_2:/var/lib/postgresql/data
+      - ./config/postgre:/etc/postgresql
+    expose:
+      - "5432"
+
+networks:
+  apigateway:
+    driver: bridge
+
+volumes:
+  static_volume:
+  media_volume:
+  postgre_auth_db_volume_2:

@@ -1,0 +1,9 @@
+FROM postgres:10
+
+
+#COPY ./config/db/postgresql.conf /etc/postgresql/postgresql.conf
+
+#RUN apt-get update && apt-get install -y \
+#    sudo
+#CMD ["sudo", "chmod", "-R", "777", "/var/lib/postgresql/data"]
+CMD ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
