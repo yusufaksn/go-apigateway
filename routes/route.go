@@ -34,14 +34,13 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/protected", authMiddleware, protectedRoute)
 }
 
-// Yetkilendirme middleware
 func authMiddleware(c *fiber.Ctx) error {
 	tokenString := c.Get("Authorization")
 	if tokenString == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing token"})
 	}
 
-	tokenString = tokenString[7:] // "Bearer " kısmını çıkar
+	tokenString = tokenString[7:]
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return secretKey, nil
@@ -54,7 +53,6 @@ func authMiddleware(c *fiber.Ctx) error {
 	return c.Next()
 }
 
-// Korunan route
 func protectedRoute(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "Welcome to the protected route!"})
 }
