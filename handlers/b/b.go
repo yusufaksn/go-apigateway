@@ -1,26 +1,25 @@
 package b
 
 import (
+	"GO_APIGATEWAY/proxy"
+
 	"github.com/gofiber/fiber/v2"
 )
 
+var url = "http://localhost:8181"
+
 func GetMethod(c *fiber.Ctx) error {
-	// Construct the URL for service A
-	/*url := "https://api.spacexdata.com/v4/launches" + c.Params("*")
-	return proxy.GetService(c, url)*/
-
-	return c.JSON(fiber.Map{"method": "post"})
-
+	return proxy.GetService(c, url)
 }
 
 func PostMethod(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{"method": "post"})
+	return proxy.PostService(c, url)
 }
 
 func PutMethod(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{"method": "put"})
+	return proxy.PutService(c, url)
 }
 
 func DeleteMethod(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{"method": "delete"})
+	return proxy.DeleteService(c, url)
 }

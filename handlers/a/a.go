@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var url = "https://api.spacexdata.com/v4/launches"
+var url = "http://localhost:3000/submit"
 
 func GetMethod(c *fiber.Ctx) error {
 	return proxy.GetService(c, url)

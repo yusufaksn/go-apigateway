@@ -2,11 +2,12 @@ package proxy
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/valyala/fasthttp"
 )
 
 func GetService(c *fiber.Ctx, url string) error {
-	// FastHTTP istemcisi
+
 	req := fasthttp.AcquireRequest()
 	defer fasthttp.ReleaseRequest(req)
 
@@ -15,23 +16,21 @@ func GetService(c *fiber.Ctx, url string) error {
 
 	resp := fasthttp.AcquireResponse()
 	defer fasthttp.ReleaseResponse(resp)
+	req.Header.Set("X-Trace-ID", GenerateTraceId())
 
-	// GET isteğini gönder
 	err := fasthttp.Do(req, resp)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Error creating request")
 	}
 
-	// Yanıtı istemciye döndür
 	c.Status(resp.StatusCode())
 	return c.Send(resp.Body())
 }
 
 func PostService(c *fiber.Ctx, url string) error {
-	// İstek gövdesini al
+
 	requestBody := c.Body()
 
-	// FastHTTP istemcisi
 	req := fasthttp.AcquireRequest()
 	defer fasthttp.ReleaseRequest(req)
 
@@ -39,11 +38,11 @@ func PostService(c *fiber.Ctx, url string) error {
 	req.Header.SetMethod("POST")
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBody(requestBody)
+	req.Header.Set("X-Trace-ID", GenerateTraceId())
 
 	resp := fasthttp.AcquireResponse()
 	defer fasthttp.ReleaseResponse(resp)
 
-	// İstek gönder
 	err := fasthttp.Do(req, resp)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -51,27 +50,25 @@ func PostService(c *fiber.Ctx, url string) error {
 		})
 	}
 
-	// Yanıtı istemciye döndür
 	return c.Status(resp.StatusCode()).Send(resp.Body())
 }
 
 func PutService(c *fiber.Ctx, url string) error {
-	// İstek gövdesini al
+
 	requestBody := c.Body()
 
-	// FastHTTP istemcisi
 	req := fasthttp.AcquireRequest()
 	defer fasthttp.ReleaseRequest(req)
 
 	req.SetRequestURI(url)
 	req.Header.SetMethod("PUT")
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Trace-ID", GenerateTraceId())
 	req.SetBody(requestBody)
 
 	resp := fasthttp.AcquireResponse()
 	defer fasthttp.ReleaseResponse(resp)
 
-	// İstek gönder
 	err := fasthttp.Do(req, resp)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -79,22 +76,21 @@ func PutService(c *fiber.Ctx, url string) error {
 		})
 	}
 
-	// Yanıtı istemciye döndür
 	return c.Status(resp.StatusCode()).Send(resp.Body())
 }
 
 func DeleteService(c *fiber.Ctx, url string) error {
-	// FastHTTP istemcisi
+
 	req := fasthttp.AcquireRequest()
 	defer fasthttp.ReleaseRequest(req)
 
 	req.SetRequestURI(url)
+	req.Header.Set("X-Trace-ID", GenerateTraceId())
 	req.Header.SetMethod("DELETE")
 
 	resp := fasthttp.AcquireResponse()
 	defer fasthttp.ReleaseResponse(resp)
 
-	// DELETE isteğini gönder
 	err := fasthttp.Do(req, resp)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -102,6 +98,9 @@ func DeleteService(c *fiber.Ctx, url string) error {
 		})
 	}
 
-	// Yanıtı istemciye döndür
 	return c.Status(resp.StatusCode()).Send(resp.Body())
+}
+
+func GenerateTraceId() string {
+	return uuid.New().String()
 }

@@ -26,20 +26,24 @@ func SetupRoutes(app *fiber.App) {
 	app.Put("/service-b/*", b.PutMethod)
 	app.Delete("/service-b/*", b.DeleteMethod)
 
+	//healtcheck
 	app.Get("/healthcheck", func(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusOK)
 	})
 
+	// auth services
 	app.Post("/register", auth.RegisterUser)
 	app.Post("/login", auth.LoginUser)
 
-	app.Get("/protected", authMiddleware, protectedRoute)
 }
 
 func authMiddleware(c *fiber.Ctx) error {
+
 	tokenString := c.Get("Authorization")
 	if tokenString == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Missing token"})
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Missing token",
+		})
 	}
 
 	tokenString = tokenString[7:]
@@ -49,12 +53,10 @@ func authMiddleware(c *fiber.Ctx) error {
 	})
 
 	if err != nil || !token.Valid {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token"})
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid token",
+		})
 	}
 
 	return c.Next()
-}
-
-func protectedRoute(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{"message": "Welcome to the protected route!"})
 }
