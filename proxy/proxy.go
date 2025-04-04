@@ -1,40 +1,107 @@
 package proxy
 
 import (
-	"io"
-	"net/http"
-
 	"github.com/gofiber/fiber/v2"
+	"github.com/valyala/fasthttp"
 )
 
 func GetService(c *fiber.Ctx, url string) error {
+	// FastHTTP istemcisi
+	req := fasthttp.AcquireRequest()
+	defer fasthttp.ReleaseRequest(req)
 
-	resp, err := http.Get(url)
+	req.SetRequestURI(url)
+	req.Header.SetMethod("GET")
+
+	resp := fasthttp.AcquireResponse()
+	defer fasthttp.ReleaseResponse(resp)
+
+	// GET isteğini gönder
+	err := fasthttp.Do(req, resp)
 	if err != nil {
-
 		return c.Status(fiber.StatusInternalServerError).SendString("Error creating request")
 	}
-	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-
-		return c.Status(fiber.StatusInternalServerError).SendString("Error reading response body")
-	}
-
-	c.Status(resp.StatusCode)
-
-	return c.Send(body)
+	// Yanıtı istemciye döndür
+	c.Status(resp.StatusCode())
+	return c.Send(resp.Body())
 }
 
 func PostService(c *fiber.Ctx, url string) error {
-	return c.JSON(fiber.Map{"method post proxy": true})
+	// İstek gövdesini al
+	requestBody := c.Body()
+
+	// FastHTTP istemcisi
+	req := fasthttp.AcquireRequest()
+	defer fasthttp.ReleaseRequest(req)
+
+	req.SetRequestURI(url)
+	req.Header.SetMethod("POST")
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBody(requestBody)
+
+	resp := fasthttp.AcquireResponse()
+	defer fasthttp.ReleaseResponse(resp)
+
+	// İstek gönder
+	err := fasthttp.Do(req, resp)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Hedef servise istek atılamadı",
+		})
+	}
+
+	// Yanıtı istemciye döndür
+	return c.Status(resp.StatusCode()).Send(resp.Body())
 }
 
 func PutService(c *fiber.Ctx, url string) error {
-	return c.JSON(fiber.Map{"method put proxy": true})
+	// İstek gövdesini al
+	requestBody := c.Body()
+
+	// FastHTTP istemcisi
+	req := fasthttp.AcquireRequest()
+	defer fasthttp.ReleaseRequest(req)
+
+	req.SetRequestURI(url)
+	req.Header.SetMethod("PUT")
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBody(requestBody)
+
+	resp := fasthttp.AcquireResponse()
+	defer fasthttp.ReleaseResponse(resp)
+
+	// İstek gönder
+	err := fasthttp.Do(req, resp)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Hedef servise istek atılamadı",
+		})
+	}
+
+	// Yanıtı istemciye döndür
+	return c.Status(resp.StatusCode()).Send(resp.Body())
 }
 
 func DeleteService(c *fiber.Ctx, url string) error {
-	return c.JSON(fiber.Map{"method put proxy": true})
+	// FastHTTP istemcisi
+	req := fasthttp.AcquireRequest()
+	defer fasthttp.ReleaseRequest(req)
+
+	req.SetRequestURI(url)
+	req.Header.SetMethod("DELETE")
+
+	resp := fasthttp.AcquireResponse()
+	defer fasthttp.ReleaseResponse(resp)
+
+	// DELETE isteğini gönder
+	err := fasthttp.Do(req, resp)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Hedef servise istek atılamadı",
+		})
+	}
+
+	// Yanıtı istemciye döndür
+	return c.Status(resp.StatusCode()).Send(resp.Body())
 }
