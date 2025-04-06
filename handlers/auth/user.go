@@ -15,16 +15,12 @@ import (
 
 var jwtKey = []byte(os.Getenv("APP_KEY")) // JWT için secret key
 
-type User struct {
+var user struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 func RegisterUser(c *fiber.Ctx) error {
-	var user struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
 
 	if err := c.BodyParser(&user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Geçersiz giriş"})
@@ -45,17 +41,13 @@ func RegisterUser(c *fiber.Ctx) error {
 }
 
 func LoginUser(c *fiber.Ctx) error {
-	var loginData struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
 
-	if err := c.BodyParser(&loginData); err != nil {
+	if err := c.BodyParser(&user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Fail"})
 	}
 
 	var storedPassword string
-	err := db.DB.QueryRow(context.Background(), "SELECT password FROM users WHERE username=$1", loginData.Username).Scan(&storedPassword)
+	err := db.DB.QueryRow(context.Background(), "SELECT password FROM users WHERE username=$1", user.Username).Scan(&storedPassword)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Fail"})
@@ -63,13 +55,13 @@ func LoginUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Fail"})
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(loginData.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(user.Password))
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Fail"})
 	}
 
 	claims := &jwt.RegisteredClaims{
-		Issuer:    loginData.Username,
+		Issuer:    user.Username,
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 	}
 
