@@ -17,3 +17,14 @@ spec:
         image: ysfaksn/go-apigateway:latest
         ports:
         - containerPort: 8080
+        env:
+        - name: PG_CONN
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: pg-connection
+        - name: APP_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: app-key

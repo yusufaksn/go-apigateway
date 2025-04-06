@@ -26,10 +26,10 @@ func main() {
 	defer zap.L().Sync()
 	zap.L().Info("app starting...")
 
-	err := godotenv.Load()
-	if err != nil {
+	godotenv.Load()
+	/*if err != nil {
 		log.Fatal("Error loading .env file")
-	}
+	}*/
 
 	db.ConnectDB()
 
