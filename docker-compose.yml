@@ -15,10 +15,21 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgre_auth_db_volume_2:/var/lib/postgresql/data
+      - postgre_auth_db_volume:/var/lib/postgresql/data
       - ./config/postgre:/etc/postgresql
     expose:
       - "5432"
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"  
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3001:3000"      
 
 networks:
   apigateway:
@@ -27,4 +38,4 @@ networks:
 volumes:
   static_volume:
   media_volume:
-  postgre_auth_db_volume_2:
+  postgre_auth_db_volume:

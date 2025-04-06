@@ -7,6 +7,7 @@ import (
 
 	"GO_APIGATEWAY/db"
 
+	fiberprometheus "github.com/ansrivas/fiberprometheus/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
@@ -38,6 +39,10 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 		Concurrency:  256 * 1024,
 	})
+
+	prometheus := fiberprometheus.New("fiber_app")
+	prometheus.RegisterAt(app, "/metrics")
+	app.Use(prometheus.Middleware)
 
 	routes.SetupRoutes(app)
 
