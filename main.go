@@ -1,35 +1,20 @@
 package main
 
 import (
+	"GO_APIGATEWAY/db"
 	"GO_APIGATEWAY/routes"
 	"log"
 	"time"
 
-	"GO_APIGATEWAY/db"
-
 	fiberprometheus "github.com/ansrivas/fiberprometheus/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 )
-
-// Kullanıcı modeli
-type User struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-// PostgreSQL bağlantısını açan fonksiyon
 
 func main() {
 
 	defer zap.L().Sync()
 	zap.L().Info("app starting...")
-
-	godotenv.Load()
-	/*if err != nil {
-		log.Fatal("Error loading .env file")
-	}*/
 
 	db.ConnectDB()
 

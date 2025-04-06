@@ -46,7 +46,7 @@ func PostService(c *fiber.Ctx, url string) error {
 	err := fasthttp.Do(req, resp)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Hedef servise istek atılamadı",
+			"error": "Failed!",
 		})
 	}
 
@@ -72,7 +72,7 @@ func PutService(c *fiber.Ctx, url string) error {
 	err := fasthttp.Do(req, resp)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Hedef servise istek atılamadı",
+			"error": "Failed!",
 		})
 	}
 
@@ -94,7 +94,7 @@ func DeleteService(c *fiber.Ctx, url string) error {
 	err := fasthttp.Do(req, resp)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Hedef servise istek atılamadı",
+			"error": "Failed!",
 		})
 	}
 

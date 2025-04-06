@@ -34,7 +34,7 @@ func RegisterUser(c *fiber.Ctx) error {
 
 	_, err = db.DB.Exec(context.Background(), "INSERT INTO users (username, password) VALUES ($1, $2)", user.Username, string(hashedPassword))
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Kullanıcı veritabanına eklenemedi"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed"})
 	}
 
 	return c.JSON(fiber.Map{"message": "Successfull!"})
