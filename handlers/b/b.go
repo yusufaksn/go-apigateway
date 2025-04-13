@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var url = "http://localhost:8181"
+var url = "http://localhost:3000/submit"
 
 func GetMethod(c *fiber.Ctx) error {
 	return proxy.GetService(c, url)

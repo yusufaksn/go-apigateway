@@ -8,6 +8,7 @@ import (
 
 	fiberprometheus "github.com/ansrivas/fiberprometheus/v2"
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 )
 
@@ -15,6 +16,11 @@ func main() {
 
 	defer zap.L().Sync()
 	zap.L().Info("app starting...")
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	db.ConnectDB()
 

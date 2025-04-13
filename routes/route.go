@@ -22,7 +22,7 @@ func SetupRoutes(app *fiber.App) {
 
 	// Service B Routes
 	app.Get("/service-b/*", b.GetMethod)
-	app.Post("/service-b/*", b.PostMethod)
+	app.Post("/service-b/*", authMiddleware, b.PostMethod)
 	app.Put("/service-b/*", b.PutMethod)
 	app.Delete("/service-b/*", b.DeleteMethod)
 
