@@ -22,8 +22,6 @@ Designed for scalable microservice architectures with built-in authentication, m
 
 ## 🛠️ Getting Started
 
-### 1️⃣ Environment Setup
-
 Start by copying the environment example file:
 
 ```bash
