@@ -42,3 +42,14 @@ CREATE TABLE users (
 -- Indexes
 CREATE INDEX idx_users_username ON users(username);
 CREATE INDEX idx_users_email ON users(email);
+
+Secrets (e.g., DB connection string and application key) are managed using Kubernetes Secrets:
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: go-app-secret
+type: Opaque
+data:
+  APP_KEY: <base64-encoded-key>
+  PG_CONNECTION: <base64-encoded-postgres-connection-string>
