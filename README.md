@@ -3,20 +3,7 @@
 A high-performance, modular API Gateway built with **Go**, using **Fiber** for routing and **FastHTTP** for external service communication.  
 Designed for scalable microservice architectures with built-in authentication, monitoring, and circuit breaker support.
 
----
 
-## ✨ Key Features
-
-- ⚡ **Blazing fast** routing with Go and Fiber (`v1.23.8`)
-- 🔄 Outbound communication via **FastHTTP**
-- 🔐 **Optional authentication** per service
-- 💥 **Circuit breaker** support to handle failing downstream services gracefully
-- 🧩 **Modular service structure** – each service handled in a separate Go file
-- 📊 Integrated **Prometheus** and **Grafana** monitoring
-- 🧵 In-progress integration with **OpenTelemetry** and **Eager**
-- ☁️ **Kubernetes-ready** with LoadBalancer support and base64-encoded secrets
-- 🐳 Dockerized and ready to deploy via **Docker Hub**
-- ⚙️ Configurable using `.env` (based on `env_example`)
 
 ---
 
