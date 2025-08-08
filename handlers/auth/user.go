@@ -9,11 +9,11 @@ import (
 	"GO_APIGATEWAY/db"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5" // v5 sürümünü kullanıyoruz
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtKey = []byte(os.Getenv("APP_KEY")) // JWT için secret key
+var jwtKey = []byte(os.Getenv("APP_KEY"))
 
 var user struct {
 	Username string `json:"username"`
@@ -23,13 +23,13 @@ var user struct {
 func RegisterUser(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(&user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Geçersiz giriş"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Error"})
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Println("Hash error:", err)
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Hash error"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error"})
 	}
 
 	_, err = db.DB.Exec(context.Background(), "INSERT INTO users (username, password) VALUES ($1, $2)", user.Username, string(hashedPassword))

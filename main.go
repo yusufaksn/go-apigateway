@@ -10,7 +10,6 @@ import (
 
 	fiberprometheus "github.com/ansrivas/fiberprometheus/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -28,10 +27,10 @@ func main() {
 	zap.ReplaceGlobals(logger)
 	zap.L().Info("app starting...")
 
-	err := godotenv.Load()
+	/*err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
-	}
+	}*/
 
 	db.ConnectDB()
 

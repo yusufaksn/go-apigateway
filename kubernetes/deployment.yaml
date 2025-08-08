@@ -28,3 +28,10 @@ spec:
             secretKeyRef:
               name: app-secret
               key: app-key
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "50Mi"
+          limits:
+            cpu: "20m"
+            memory: "100Mi"

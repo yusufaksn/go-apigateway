@@ -1,0 +1,31 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: go-app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: go-app
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 5
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0  # No delay before scaling up
+      policies:
+        - type: Percent
+          value: 100  # Double the replicas when scaling up
+          periodSeconds: 15  # Evaluate every 15 seconds
+    scaleDown:
+      stabilizationWindowSeconds: 10  # Keep at least 10s between scale-down actions
+      policies:
+        - type: Percent
+          value: 50  # Reduce replicas by 50% when scaling down
+          periodSeconds: 15  # Evaluate every 15 seconds
